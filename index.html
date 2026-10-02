@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="icon" type="image/x-icon" href="/favicon.ico">
+        <title>Staff Directory</title>
+
+        <link rel="stylesheet" href="styles.css">
+        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    </head>
+    <body>
+        <div class="staff-directory">
+            <h1>Staff Directory</h1>
+
+            <div 
+                class="staff-list"
+                x-data="{
+                    search: '',
+                    services: [],
+                    locations: [],
+                    schools: [],
+                    showFilters: false,
+                    currentPage: 1,
+                    itemsPerPage: 6,
+
+                    items: [
+                        {
+                            'id': 1,
+                            'name': 'Sarah Mitchell',
+                            'title': 'Senior Consultant',
+                            'locations': ['Minneapolis', 'St. Paul'],
+                            'services': ['Strategy', 'Consulting'],
+                            'schools': ['University of Minnesota'],
+                            'search_string': 'Sarah Mitchell Senior Consultant'
+                        },
+                        {
+                            'id': 2,
+                            'name': 'David Nguyen',
+                            'title': 'Project Manager',
+                            'locations': ['St. Paul'],
+                            'services': ['Project Management', 'Consulting'],
+                            'schools': ['University of Wisconsin-Madison'],
+                            'search_string': 'David Nguyen Project Manager'
+                        },
+                        {
+                            'id': 3,
+                            'name': 'Emily Carter',
+                            'title': 'Senior Designer',
+                            'locations': ['Minneapolis'],
+                            'services': ['Design', 'Strategy'],
+                            'schools': ['University of Minnesota', 'University of Chicago'],
+                            'search_string': 'Emily Carter Senior Designer'
+                        },
+                        {
+                            'id': 4,
+                            'name': 'Michael Rodriguez',
+                            'title': 'Technology Consultant',
+                            'locations': ['Minneapolis', 'Chicago'],
+                            'services': ['Technology', 'Consulting'],
+                            'schools': ['University of Chicago'],
+                            'search_string': 'Michael Rodriguez Technology Consultant'
+                        },
+                        {
+                            'id': 5,
+                            'name': 'Jessica Thompson',
+                            'title': 'Research Director',
+                            'locations': ['Chicago'],
+                            'services': ['Research', 'Strategy'],
+                            'schools': ['University of Chicago'],
+                            'search_string': 'Jessica Thompson Research Director'
+                        },
+                        {
+                            'id': 6,
+                            'name': 'Robert Anderson',
+                            'title': 'Senior Project Manager',
+                            'locations': ['Minneapolis'],
+                            'services': ['Project Management', 'Technology'],
+                            'schools': ['Iowa State University'],
+                            'search_string': 'Robert Anderson Senior Project Manager'
+                        },
+                        {
+                            'id': 7,
+                            'name': 'Amanda Wilson',
+                            'title': 'Strategy Consultant',
+                            'locations': ['St. Paul', 'Chicago'],
+                            'services': ['Strategy', 'Research', 'Consulting'],
+                            'schools': ['Northwestern University'],
+                            'search_string': 'Amanda Wilson Strategy Consultant'
+                        },
+                        {
+                            'id': 8,
+                            'name': 'Daniel Brooks',
+                            'title': 'Technology Director',
+                            'locations': ['Chicago'],
+                            'services': ['Technology', 'Strategy'],
+                            'schools': ['Northwestern University'],
+                            'search_string': 'Daniel Brooks Technology Director'
+                        },
+                        {
+                            'id': 9,
+                            'name': 'Laura Bennett',
+                            'title': 'Senior Research Consultant',
+                            'locations': ['Minneapolis', 'Chicago'],
+                            'services': ['Research', 'Consulting'],
+                            'schools': ['University of Michigan'],
+                            'search_string': 'Laura Bennett Senior Research Consultant'
+                        },
+                        {
+                            'id': 10,
+                            'name': 'James Foster',
+                            'title': 'UX Designer',
+                            'locations': ['St. Paul'],
+                            'services': ['Design', 'Research'],
+                            'schools': ['University of Michigan'],
+                            'search_string': 'James Foster UX Designer'
+                        },
+                        {
+                            'id': 11,
+                            'name': 'Nicole Harris',
+                            'title': 'Consulting Director',
+                            'locations': ['Minneapolis'],
+                            'services': ['Consulting', 'Strategy'],
+                            'schools': ['University of Wisconsin-Madison'],
+                            'search_string': 'Nicole Harris Consulting Director'
+                        },
+                        {
+                            'id': 12,
+                            'name': 'Thomas Clark',
+                            'title': 'Senior Technology Consultant',
+                            'locations': ['St. Paul', 'Chicago'],
+                            'services': ['Technology', 'Consulting'],
+                            'schools': ['Iowa State University'],
+                            'search_string': 'Thomas Clark Senior Technology Consultant'
+                        }
+                    ],
+
+                    get filteredItems() {
+                        return this.items.filter(i => {
+                            //check to see if the search string matches our item's search string
+                            if(this.search !== '' && !i.search_string.toLowerCase().includes(this.search.toLowerCase())) {
+                                return false;
+                            }
+
+                            //if the user selected one or more services make sure that they all match the item's services
+                            if(this.services.length > 0) {
+                                let servicesNotMatched = false;
+
+                                this.services.forEach(function(service) {
+                                    if(!i.services.includes(service)) {
+                                        servicesNotMatched = true;
+                                    }
+                                });
+
+                                if(servicesNotMatched) {
+                                    return false;
+                                }
+                            }
+
+                            //if the user selected one or more locations make sure that they all match the item's locations
+                            if(this.locations.length > 0) {
+                                let locationsNotMatched = false;
+
+                                this.locations.forEach(function(location) {
+                                    if(!i.locations.includes(location)) {
+                                        locationsNotMatched = true;
+                                    }
+                                });
+
+                                if(locationsNotMatched) {
+                                    return false;
+                                }
+                            }
+
+                            //if the user selected one or more schools make sure that they all match the item's schools
+                            if(this.schools.length > 0) {
+                                let schoolsNotMatched = false;
+
+                                this.schools.forEach(function(school) {
+                                    if(!i.schools.includes(school)) {
+                                        schoolsNotMatched = true;
+                                    }
+                                });
+
+                                if(schoolsNotMatched) {
+                                    return false;
+                                }
+                            }
+
+                            return true;
+                        })
+                    },
+
+                    get paginatedItems() {
+                        const start = (this.currentPage - 1) * this.itemsPerPage;
+                        const end = start + this.itemsPerPage;
+                        return this.filteredItems.slice(start, end);
+                    },
+
+                    get totalPages() {
+                        return Math.ceil(this.filteredItems.length / this.itemsPerPage);
+                    },
+
+                    get showPagination() {
+                        return this.totalPages > 1;
+                    },
+
+                    nextPage() {
+                        if (this.currentPage &lt; this.totalPages) {
+                            this.currentPage++;
+                            this.transitionResults();
+                        }
+                    },
+
+                    prevPage() {
+                        if (this.currentPage > 1) {
+                            this.currentPage--;
+                            this.transitionResults();
+                        }
+                    },
+
+                    goToPage(page) {
+                        this.currentPage = page;
+                        this.transitionResults();
+                    },
+
+                    transitionResults() {
+                        const resultsElement = this.$root.querySelector('.staff-list__results');
+                        resultsElement.classList.add('staff-list__results--hidden');
+                        resultsElement.classList.remove('staff-list__results--loading');
+                        
+                        setTimeout(() => {
+                            resultsElement.classList.remove('staff-list__results--hidden');
+                            resultsElement.classList.add('staff-list__results--loading');
+                            resultsElement.scrollIntoView({ 
+                                behavior: 'smooth', 
+                                block: 'start'
+                            });
+                        }, 10);
+                    },
+
+                    resetToFirstPage() {
+                        this.currentPage = 1;
+                        this.transitionResults();
+                    }
+                }"
+                x-init="$watch('filteredItems', () => resetToFirstPage())"
+                >
+                <div class="staff-list__liner">
+                    <div class="staff-list__filters-trigger">
+                        <button type="button" @click="showFilters = !showFilters">
+                            <span x-text="showFilters ? 'Hide Filters' : 'Show Filters'"></span>
+                        </button>
+                    </div>
+                    <div x-show="showFilters" id="staff-list__filters" class="staff-list__filters">
+                        <div class="staff-list__filters-liner">
+                            <div class="staff-list__filters-filter">
+                                <label for="staff-search" class="staff-list__filters-filter-label">Search</label>
+                                <input type="text" id="staff-search" placeholder="Search..." x-model="search" />
+                            </div>
+                            <div class="staff-list__filters-filter">
+                                <div class="staff-list__filters-filter-label">Services</div>   
+                                <div class="staff-list__filters-filter-option">
+                                    <input type="checkbox" id="staff-service-strategy" value="Strategy" x-model="services">
+                                    <label for="staff-service-strategy">Strategy</label>
+                                </div>
+                                <div class="staff-list__filters-filter-option">
+                                    <input type="checkbox" id="staff-service-consulting" value="Consulting" x-model="services">
+                                    <label for="staff-service-consulting">Consulting</label>
+                                </div>
+                                <div class="staff-list__filters-filter-option">
+                                    <input type="checkbox" id="staff-service-project-management" value="Project Management" x-model="services">
+                                    <label for="staff-service-project-management">Project Management</label>
+                                </div>
+                                <div class="staff-list__filters-filter-option">
+                                    <input type="checkbox" id="staff-service-design" value="Design" x-model="services">
+                                    <label for="staff-service-design">Design</label>
+                                </div>
+                                <div class="staff-list__filters-filter-option">
+                                    <input type="checkbox" id="staff-service-technology" value="Technology" x-model="services">
+                                    <label for="staff-service-technology">Technology</label>
+                                </div>
+                                <div class="staff-list__filters-filter-option">
+                                    <input type="checkbox" id="staff-service-research" value="Research" x-model="services">
+                                    <label for="staff-service-research">Research</label>
+                                </div>
+                            </div>
+                            <div class="staff-list__filters-filter">
+                                <div class="staff-list__filters-filter-label">Locations</div>
+                                <div class="staff-list__filters-filter-option">
+                                    <input type="checkbox" id="staff-location-minneapolis" value="Minneapolis" x-model="locations">
+                                    <label for="staff-location-minneapolis">Minneapolis</label>
+                                </div>
+                                <div class="staff-list__filters-filter-option">
+                                    <input type="checkbox" id="staff-location-st-paul" value="St. Paul" x-model="locations">
+                                    <label for="staff-location-st-paul">St. Paul</label>
+                                </div>
+                                <div class="staff-list__filters-filter-option">
+                                    <input type="checkbox" id="staff-location-chicago" value="Chicago" x-model="locations">
+                                    <label for="staff-location-chicago">Chicago</label>
+                                </div>
+                            </div>
+                            <div class="staff-list__filters-filter">
+                                <div class="staff-list__filters-filter-label">Schools</div>
+                                <div class="staff-list__filters-filter-option">
+                                    <input type="checkbox" id="staff-school-minnesota" value="University of Minnesota" x-model="schools">
+                                    <label for="staff-school-minnesota">University of Minnesota</label>
+                                </div>
+                                <div class="staff-list__filters-filter-option">
+                                    <input type="checkbox" id="staff-school-wisconsin" value="University of Wisconsin-Madison" x-model="schools">
+                                    <label for="staff-school-wisconsin">University of Wisconsin-Madison</label>
+                                </div>
+                                <div class="staff-list__filters-filter-option">
+                                    <input type="checkbox" id="staff-school-northwestern" value="Northwestern University" x-model="schools">
+                                    <label for="staff-school-northwestern">Northwestern University</label>
+                                </div>
+                                <div class="staff-list__filters-filter-option">
+                                    <input type="checkbox" id="staff-school-chicago" value="University of Chicago" x-model="schools">
+                                    <label for="staff-school-chicago">University of Chicago</label>
+                                </div>
+                                <div class="staff-list__filters-filter-option">
+                                    <input type="checkbox" id="staff-school-iowa-state" value="Iowa State University" x-model="schools">
+                                    <label for="staff-school-iowa-state">Iowa State University</label>
+                                </div>
+                                <div class="staff-list__filters-filter-option">
+                                    <input type="checkbox" id="staff-school-michigan" value="University of Michigan" x-model="schools">
+                                    <label for="staff-school-michigan">University of Michigan</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="staff-list__results">
+                        <div x-show="filteredItems.length > 0" class="staff-list__results-count">
+                            <p x-text="`Showing ${paginatedItems.length} of ${filteredItems.length} staff members`"></p>
+                        </div>
+                        <div x-show="filteredItems.length === 0" class="staff-list__no-results">
+                            <p>No staff members found matching your criteria.</p>
+                        </div>
+                
+                        <div class="staff-list__items">
+                            <div class="staff-list__items-liner">
+                                <template x-for="item in paginatedItems" :key="item.id">
+                                    <div class="staff-list__item">
+                                        <div class="staff-list__item-full-name">
+                                            <h2 x-text="item.name"></h2>
+                                        </div>
+                                        <div x-show="item.title" class="staff-list__item-title" x-text="item.title"></div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                
+                        <div class="staff-list__pagination" x-show="showPagination">
+                            <button 
+                                @click="prevPage()" 
+                                :disabled="currentPage === 1"
+                                class="staff-list__pagination-button staff-list__pagination-button--previous"
+                                >
+                                Previous
+                            </button>
+                
+                            <div class="staff-list__pagination-pages">
+                                <template x-for="page in totalPages" :key="page">
+                                    <button 
+                                        @click="goToPage(page)"
+                                        :class="{ 'staff-list__pagination-page--active': currentPage === page }"
+                                        class="staff-list__pagination-page"
+                                        x-text="page"
+                                    ></button>
+                                </template>
+                            </div>
+                
+                            <button 
+                                @click="nextPage()" 
+                                :disabled="currentPage === totalPages"
+                                class="staff-list__pagination-button staff-list__pagination-button--next"
+                                >
+                                Next
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
